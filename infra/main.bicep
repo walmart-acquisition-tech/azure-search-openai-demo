@@ -878,7 +878,9 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.6.1' = if (use
     enableFreeTier: cosmosDbSkuName == 'free'
     capabilitiesToAdd: cosmosDbSkuName == 'serverless' ? ['EnableServerless'] : []
     networkRestrictions: {
-      ipRules: []
+      ipRules: [
+        '8.8.8.8'           // Google DNS (publicly routable)
+      ]
       networkAclBypass: bypass
       publicNetworkAccess: publicNetworkAccess
       virtualNetworkRules: []
