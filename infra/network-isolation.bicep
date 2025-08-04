@@ -39,7 +39,7 @@ module containerAppsNSG 'br/public:avm/res/network/network-security-group:0.5.1'
           sourcePortRange: '*'
           sourceAddressPrefix: 'AzureLoadBalancer'
           destinationPortRange: '30000-32767'
-          destinationAddressPrefix: '10.0.0.0/21' // Container apps subnet
+          destinationAddressPrefix: '10.0.16.0/21' // Container apps subnet
           access: 'Allow'
           priority: 100
           direction: 'Inbound'
@@ -51,7 +51,7 @@ module containerAppsNSG 'br/public:avm/res/network/network-security-group:0.5.1'
         properties: {
           protocol: 'Tcp'
           sourcePortRange: '*'
-          sourceAddressPrefix: '10.0.0.0/21' // Container apps subnet
+          sourceAddressPrefix: '10.0.16.0/21' // Container apps subnet
           destinationPortRange: '443'
           destinationAddressPrefix: 'MicrosoftContainerRegistry'
           access: 'Allow'
@@ -64,7 +64,7 @@ module containerAppsNSG 'br/public:avm/res/network/network-security-group:0.5.1'
         properties: {
           protocol: 'Tcp'
           sourcePortRange: '*'
-          sourceAddressPrefix: '10.0.0.0/21' // Container apps subnet
+          sourceAddressPrefix: '10.0.16.0/21' // Container apps subnet
           destinationPortRange: '443'
           destinationAddressPrefix: 'AzureFrontDoor.FirstParty'
           access: 'Allow'
@@ -77,9 +77,9 @@ module containerAppsNSG 'br/public:avm/res/network/network-security-group:0.5.1'
         properties: {
           protocol: '*'
           sourcePortRange: '*'
-          sourceAddressPrefix: '10.0.0.0/21' // Container apps subnet
+          sourceAddressPrefix: '10.0.16.0/21' // Container apps subnet
           destinationPortRange: '*'
-          destinationAddressPrefix: '10.0.0.0/21' // Container apps subnet
+          destinationAddressPrefix: '10.0.16.0/21' // Container apps subnet
           access: 'Allow'
           priority: 120
           direction: 'Outbound'
@@ -90,7 +90,7 @@ module containerAppsNSG 'br/public:avm/res/network/network-security-group:0.5.1'
         properties: {
           protocol: 'Tcp'
           sourcePortRange: '*'
-          sourceAddressPrefix: '10.0.0.0/21' // Container apps subnet
+          sourceAddressPrefix: '10.0.16.0/21' // Container apps subnet
           destinationPortRange: '443'
           destinationAddressPrefix: 'AzureActiveDirectory'
           access: 'Allow'
@@ -103,7 +103,7 @@ module containerAppsNSG 'br/public:avm/res/network/network-security-group:0.5.1'
         properties: {
           protocol: 'Tcp'
           sourcePortRange: '*'
-          sourceAddressPrefix: '10.0.0.0/21' // Container apps subnet
+          sourceAddressPrefix: '10.0.16.0/21' // Container apps subnet
           destinationPortRange: '443'
           destinationAddressPrefix: 'AzureMonitor'
           access: 'Allow'
@@ -116,7 +116,7 @@ module containerAppsNSG 'br/public:avm/res/network/network-security-group:0.5.1'
         properties: {
           protocol: '*'
           sourcePortRange: '*'
-          sourceAddressPrefix: '10.0.0.0/21' // Container apps subnet
+          sourceAddressPrefix: '10.0.16.0/21' // Container apps subnet
           destinationPortRange: '53'
           destinationAddressPrefix: '168.63.129.16'
           access: 'Allow'
@@ -129,7 +129,7 @@ module containerAppsNSG 'br/public:avm/res/network/network-security-group:0.5.1'
         properties: {
           protocol: 'Tcp'
           sourcePortRange: '*'
-          sourceAddressPrefix: '10.0.0.0/21' // Container apps subnet
+          sourceAddressPrefix: '10.0.16.0/21' // Container apps subnet
           destinationPortRange: '443'
           destinationAddressPrefix: 'Storage.${location}'
           access: 'Allow'
@@ -284,7 +284,7 @@ module vnet 'br/public:avm/res/network/virtual-network:0.6.1' = {
         : [
             {
               name: containerAppsSubnetName
-              addressPrefix: '10.0.0.0/21'
+              addressPrefix: '10.0.16.0/21'
               delegation: 'Microsoft.App/environments'
               networkSecurityGroupResourceId: containerAppsNSG!.outputs.resourceId
             }
