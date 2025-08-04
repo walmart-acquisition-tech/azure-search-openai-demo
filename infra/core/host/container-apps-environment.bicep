@@ -36,7 +36,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2025-02-02-
     publicNetworkAccess: usePrivateIngress ? 'Disabled' : 'Enabled'
     vnetConfiguration: usePrivateIngress ? {
       infrastructureSubnetId: subnetResourceId
-      internal: true
+      internal: false  // Changed to false to allow external access while still using VNet
     } : null
     workloadProfiles: usePrivateIngress
     ? [
