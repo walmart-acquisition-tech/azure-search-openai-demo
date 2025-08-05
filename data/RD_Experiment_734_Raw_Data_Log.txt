@@ -1,0 +1,15 @@
+2024-05-12 08:00:00, Temperature: 24.60°C, Voltage: 3.72 V, Current: 1.64 A
+2024-05-12 08:10:00, Temperature: 25.68°C, Voltage: 3.63 V, Current: 1.43 A
+2024-05-12 08:20:00, Temperature: 25.27°C, Voltage: 3.73 V, Current: 1.56 A
+2024-05-12 08:30:00, Temperature: 24.73°C, Voltage: 3.68 V, Current: 1.38 A
+2024-05-12 08:40:00, Temperature: 24.94°C, Voltage: 3.73 V, Current: 1.50 A
+2024-05-12 08:50:00, Temperature: 25.37°C, Voltage: 3.78 V, Current: 1.58 A
+2024-05-12 09:00:00, Temperature: 25.13°C, Voltage: 3.79 V, Current: 1.53 A
+2024-05-12 09:10:00, Temperature: 24.41°C, Voltage: 3.65 V, Current: 1.47 A
+2024-05-12 09:20:00, Temperature: 24.55°C, Voltage: 3.68 V, Current: 1.49 A
+2024-05-12 09:30:00, Temperature: 24.95°C, Voltage: 3.75 V, Current: 1.46 A
+2024-05-12 09:40:00, Temperature: 24.51°C, Voltage: 3.65 V, Current: 1.44 A
+2024-05-12 09:50:00, Temperature: 24.25°C, Voltage: 3.61 V, Current: 1.38 A
+2024-05-12 10:00:00, Temperature: 25.49°C, Voltage: 3.65 V, Current: 1.46 A
+2024-05-12 10:10:00, Temperature: 25.15°C, Voltage: 3.61 V, Current: 1.21 A
+2024-05-12 10:20:00, Temperature: 24.10°C, Voltage: 3.79 V, Current: 1.55 A
