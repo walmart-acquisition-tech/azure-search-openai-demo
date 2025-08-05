@@ -151,7 +151,7 @@ export const Settings = ({
                 onRenderLabel={props => renderLabel(props, promptTemplateId, promptTemplateFieldId, t("helpTexts.promptTemplate"))}
             />
 
-            <AIModeSettings defaultAIMode={aiMode} updateAIMode={val => onChange("aiMode", val)} />
+            <AIModeSettings currentAIMode={aiMode} updateAIMode={val => onChange("aiMode", val)} />
 
             <TextField
                 id={temperatureFieldId}
