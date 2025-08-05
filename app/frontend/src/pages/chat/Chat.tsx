@@ -11,6 +11,7 @@ import {
     chatApi,
     configApi,
     RetrievalMode,
+    AIMode,
     ChatAppResponse,
     ChatAppResponseOrError,
     ChatAppRequest,
@@ -49,6 +50,7 @@ const Chat = () => {
     const [maxSubqueryCount, setMaxSubqueryCount] = useState<number>(10);
     const [resultsMergeStrategy, setResultsMergeStrategy] = useState<string>("interleaved");
     const [retrievalMode, setRetrievalMode] = useState<RetrievalMode>(RetrievalMode.Hybrid);
+    const [aiMode, setAIMode] = useState<AIMode>(AIMode.DataAndOpenAI);
     const [useSemanticRanker, setUseSemanticRanker] = useState<boolean>(true);
     const [useQueryRewriting, setUseQueryRewriting] = useState<boolean>(false);
     const [reasoningEffort, setReasoningEffort] = useState<string>("");
@@ -225,6 +227,7 @@ const Chat = () => {
                         minimum_reranker_score: minimumRerankerScore,
                         minimum_search_score: minimumSearchScore,
                         retrieval_mode: retrievalMode,
+                        ai_mode: aiMode,
                         semantic_ranker: useSemanticRanker,
                         semantic_captions: useSemanticCaptions,
                         query_rewriting: useQueryRewriting,
@@ -362,6 +365,9 @@ const Chat = () => {
                 break;
             case "retrievalMode":
                 setRetrievalMode(value);
+                break;
+            case "aiMode":
+                setAIMode(value);
                 break;
             case "useAgenticRetrieval":
                 setUseAgenticRetrieval(value);
@@ -554,6 +560,7 @@ const Chat = () => {
                         excludeCategory={excludeCategory}
                         includeCategory={includeCategory}
                         retrievalMode={retrievalMode}
+                        aiMode={aiMode}
                         useGPT4V={useGPT4V}
                         gpt4vInput={gpt4vInput}
                         vectorFields={vectorFields}

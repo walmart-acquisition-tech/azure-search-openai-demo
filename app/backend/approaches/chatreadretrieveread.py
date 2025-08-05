@@ -92,9 +92,21 @@ class ChatReadRetrieveReadApproach(ChatApproach):
         else:
             extra_info = await self.run_search_approach(messages, overrides, auth_claims)
 
+        # Get ai_mode for system prompt context
+        ai_mode = overrides.get("ai_mode", "data_and_openai")
+        ai_mode_instructions = {
+            "data_only": "IMPORTANT: Only use information from the provided documents. Do not use external knowledge or general information that isn't contained in the source documents.",
+            "openai_only": "Use your general knowledge and reasoning capabilities. No document search results are provided.",
+            "data_and_openai": "Use both the provided documents and your general knowledge to provide comprehensive answers."
+        }
+        
+        prompt_variables = self.get_system_prompt_variables(overrides.get("prompt_template"))
+        if ai_mode in ai_mode_instructions:
+            prompt_variables["ai_mode_instruction"] = ai_mode_instructions[ai_mode]
+
         messages = self.prompt_manager.render_prompt(
             self.answer_prompt,
-            self.get_system_prompt_variables(overrides.get("prompt_template"))
+            prompt_variables
             | {
                 "include_follow_up_questions": bool(overrides.get("suggest_followup_questions")),
                 "past_messages": messages[:-1],
@@ -129,6 +141,21 @@ class ChatReadRetrieveReadApproach(ChatApproach):
     async def run_search_approach(
         self, messages: list[ChatCompletionMessageParam], overrides: dict[str, Any], auth_claims: dict[str, Any]
     ):
+        ai_mode = overrides.get("ai_mode", "data_and_openai")
+        
+        # If OpenAI only mode, skip search entirely and use only OpenAI knowledge
+        if ai_mode == "openai_only":
+            return ExtraInfo(
+                data_points=DataPoints(text=[], images=[]),
+                thoughts=[
+                    ThoughtStep(
+                        title="AI Mode: OpenAI Only",
+                        description="Using OpenAI's built-in knowledge without searching documents",
+                        props={}
+                    )
+                ]
+            )
+        
         use_text_search = overrides.get("retrieval_mode") in ["text", "hybrid", None]
         use_vector_search = overrides.get("retrieval_mode") in ["vectors", "hybrid", None]
         use_semantic_ranker = True if overrides.get("semantic_ranker") else False

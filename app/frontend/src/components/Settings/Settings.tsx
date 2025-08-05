@@ -4,7 +4,8 @@ import { TextField, ITextFieldProps, Checkbox, ICheckboxProps, Dropdown, IDropdo
 import { HelpCallout } from "../HelpCallout";
 import { GPT4VSettings } from "../GPT4VSettings";
 import { VectorSettings } from "../VectorSettings";
-import { RetrievalMode, VectorFields, GPT4VInput } from "../../api";
+import { AIModeSettings } from "../AIModeSettings";
+import { RetrievalMode, VectorFields, GPT4VInput, AIMode } from "../../api";
 import styles from "./Settings.module.css";
 
 // Add type for onRenderLabel
@@ -26,6 +27,7 @@ export interface SettingsProps {
     excludeCategory: string;
     includeCategory: string;
     retrievalMode: RetrievalMode;
+    aiMode: AIMode;
     useGPT4V: boolean;
     gpt4vInput: GPT4VInput;
     vectorFields: VectorFields;
@@ -67,6 +69,7 @@ export const Settings = ({
     excludeCategory,
     includeCategory,
     retrievalMode,
+    aiMode,
     useGPT4V,
     gpt4vInput,
     vectorFields,
@@ -147,6 +150,8 @@ export const Settings = ({
                 aria-labelledby={promptTemplateId}
                 onRenderLabel={props => renderLabel(props, promptTemplateId, promptTemplateFieldId, t("helpTexts.promptTemplate"))}
             />
+
+            <AIModeSettings defaultAIMode={aiMode} updateAIMode={val => onChange("aiMode", val)} />
 
             <TextField
                 id={temperatureFieldId}

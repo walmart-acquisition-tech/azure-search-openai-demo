@@ -7,31 +7,51 @@ import Layout from "./pages/layout/Layout";
 
 const LayoutWrapper = () => {
     const [loggedIn, setLoggedIn] = useState(false);
-    if (useLogin) {
-        var msalInstance = new PublicClientApplication(msalConfig);
+    const [msalInstance, setMsalInstance] = useState<PublicClientApplication | null>(null);
+    const [isInitialized, setIsInitialized] = useState(false);
 
-        // Default to using the first account if no account is active on page load
-        if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
-            // Account selection logic is app dependent. Adjust as needed for different use cases.
-            msalInstance.setActiveAccount(msalInstance.getActiveAccount());
-        }
+    useEffect(() => {
+        if (useLogin) {
+            const initializeMsal = async () => {
+                const instance = new PublicClientApplication(msalConfig);
 
-        // Listen for sign-in event and set active account
-        msalInstance.addEventCallback(event => {
-            if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
-                const account = event.payload as AccountInfo;
-                msalInstance.setActiveAccount(account);
-            }
-        });
+                // Initialize MSAL instance
+                await instance.initialize();
 
-        useEffect(() => {
-            const fetchLoggedIn = async () => {
-                setLoggedIn(await checkLoggedIn(msalInstance));
+                // Default to using the first account if no account is active on page load
+                if (!instance.getActiveAccount() && instance.getAllAccounts().length > 0) {
+                    // Account selection logic is app dependent. Adjust as needed for different use cases.
+                    instance.setActiveAccount(instance.getAllAccounts()[0]);
+                }
+
+                // Listen for sign-in event and set active account
+                instance.addEventCallback(event => {
+                    if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
+                        const account = event.payload as AccountInfo;
+                        instance.setActiveAccount(account);
+                    }
+                });
+
+                setMsalInstance(instance);
+                setIsInitialized(true);
+
+                // Check login status after initialization
+                const loginStatus = await checkLoggedIn(instance);
+                setLoggedIn(loginStatus);
             };
 
-            fetchLoggedIn();
-        }, []);
+            initializeMsal().catch(console.error);
+        } else {
+            setIsInitialized(true);
+        }
+    }, []);
 
+    // Show loading state while MSAL is initializing
+    if (useLogin && !isInitialized) {
+        return <div>Loading...</div>;
+    }
+
+    if (useLogin && msalInstance) {
         return (
             <MsalProvider instance={msalInstance}>
                 <LoginContext.Provider
