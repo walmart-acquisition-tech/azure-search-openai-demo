@@ -17,6 +17,46 @@ urlFragment: azure-search-openai-demo
 ---
 -->
 
+## 🤝 Team Collaboration Setup
+
+**To work with existing Azure resources instead of creating new ones:**
+
+### For the Environment Owner (Person who ran `azd up`):
+1. Export your environment configuration:
+   ```bash
+   azd env get-values > .env.shared
+   ```
+2. Share the `.env.shared` file with your teammates
+3. Also share your environment name: `azd env list`
+
+### For Team Members (Joining existing environment):
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/walmart-acquisition-tech/azure-search-openai-demo.git
+   cd azure-search-openai-demo
+   ```
+
+2. Import the shared environment:
+   ```bash
+   azd env new 'env name' --subscription <subscription-id-from-shared-file>
+   azd env set --env-file .env.shared
+   ```
+
+3. Verify connection to existing resources:
+   ```bash
+   azd show
+   ```
+
+4. Run locally to test:
+   ```bash
+   cd app
+   ./start.sh
+   ```
+
+**Note:** This connects you to the same Azure resources - no need to run `azd up` again!
+
+---
+
 # RAG chat app with Azure OpenAI and Azure AI Search (Python)
 
 This solution creates a ChatGPT-like frontend experience over your own documents using RAG (Retrieval Augmented Generation). It uses Azure OpenAI Service to access GPT models, and Azure AI Search for data indexing and retrieval.
