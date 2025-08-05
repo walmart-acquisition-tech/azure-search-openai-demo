@@ -11,7 +11,7 @@
 }
 
 .header {
-    background-color: #222222;
+    background-color: #0071ce;
     color: #f2f2f2;
 }
 
@@ -24,6 +24,34 @@
     position: relative;
 }
 
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex: 1;
+}
+
+.headerCenter {
+    flex: 1;
+    display: none; /* Hidden on mobile, shown on desktop */
+    justify-content: center;
+    margin-left: -45px; /* Shift left to center over toggles */
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.headerLogoContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
 .headerTitleContainer {
     display: flex;
     align-items: center;
@@ -32,7 +60,7 @@
 }
 
 .headerLogo {
-    height: 2rem;
+    height: 60px;
     width: auto;
 }
 
@@ -45,7 +73,7 @@
     z-index: 100;
     display: none;
     flex-direction: column;
-    background-color: #222222;
+    background-color: #0071ce;
     position: absolute;
     top: 2.7rem;
     right: 0;
@@ -109,6 +137,18 @@
         font-weight: 600;
     }
 
+    .headerCenter {
+        display: flex !important;
+    }
+
+    .headerLeft {
+        gap: 34rem; /* Much more space between title and logo on desktop */
+    }
+
+    .headerLogo {
+        height: 70px; /* Even bigger on desktop */
+    }
+
     .headerNavList {
         display: flex;
         flex-direction: row;
@@ -116,12 +156,15 @@
         padding: 0;
         position: static;
         width: auto;
+        background-color: transparent;
     }
 
     .headerNavPageLink {
         border-bottom: none;
         padding: 0;
         display: block;
+        font-size: 1.1rem;
+        font-weight: 500;
     }
 
     .headerNavPageLink:hover {
@@ -131,6 +174,8 @@
     .headerNavPageLinkActive {
         color: #f2f2f2;
         text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 500;
     }
 
     .headerNavLeftMargin {

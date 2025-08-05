@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./Layout.module.css";
 
 import { useLogin } from "../../authConfig";
+import appLogo2 from "../../assets/applogo2.svg";
 
 import { LoginButton } from "../../components/LoginButton";
 import { IconButton } from "@fluentui/react";
@@ -38,39 +39,39 @@ const Layout = () => {
         <div className={styles.layout}>
             <header className={styles.header} role={"banner"}>
                 <div className={styles.headerContainer} ref={menuRef}>
-                    <Link to="/" className={styles.headerTitleContainer}>
-                        <h3 className={styles.headerTitle}>{t("headerTitle")}</h3>
-                    </Link>
-                    <nav>
-                        <ul className={`${styles.headerNavList} ${menuOpen ? styles.show : ""}`}>
-                            <li>
-                                <NavLink
-                                    to="/"
-                                    className={({ isActive }) => (isActive ? styles.headerNavPageLinkActive : styles.headerNavPageLink)}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    {t("chat")}
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    to="/qa"
-                                    className={({ isActive }) => (isActive ? styles.headerNavPageLinkActive : styles.headerNavPageLink)}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    {t("qa")}
-                                </NavLink>
-                            </li>
-                        </ul>
-                    </nav>
-                    <div className={styles.loginMenuContainer}>
-                        {useLogin && <LoginButton />}
-                        <IconButton
-                            iconProps={{ iconName: "GlobalNavButton" }}
-                            className={styles.menuToggle}
-                            onClick={toggleMenu}
-                            ariaLabel={t("labels.toggleMenu")}
-                        />
+                    <div className={styles.headerLeft}>
+                        <Link to="/" className={styles.headerTitleContainer}>
+                            <h3 className={styles.headerTitle}>{t("headerTitle")}</h3>
+                        </Link>
+                        <div className={styles.headerLogoContainer}>
+                            <img src={appLogo2} alt="Company logo" className={styles.headerLogo} />
+                        </div>
+                    </div>
+                    <div className={styles.headerCenter}>
+                        <nav>
+                            <ul className={`${styles.headerNavList} ${menuOpen ? styles.show : ""}`}>
+                                <li>
+                                    <NavLink
+                                        to="/qa"
+                                        className={({ isActive }) => (isActive ? styles.headerNavPageLinkActive : styles.headerNavPageLink)}
+                                        onClick={() => setMenuOpen(false)}
+                                    >
+                                        {t("qa")}
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div className={styles.headerRight}>
+                        <div className={styles.loginMenuContainer}>
+                            {useLogin && <LoginButton />}
+                            <IconButton
+                                iconProps={{ iconName: "GlobalNavButton" }}
+                                className={styles.menuToggle}
+                                onClick={toggleMenu}
+                                ariaLabel={t("labels.toggleMenu")}
+                            />
+                        </div>
                     </div>
                 </div>
             </header>
