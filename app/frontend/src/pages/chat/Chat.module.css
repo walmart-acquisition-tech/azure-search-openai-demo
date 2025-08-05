@@ -95,6 +95,7 @@
 .commandsSplitContainer {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .commandsContainer {
@@ -102,6 +103,14 @@
     padding-left: 1rem;
     padding-right: 1rem;
     align-self: flex-end;
+}
+
+.commandsCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    margin-left: 85px;
 }
 
 .commandButton {

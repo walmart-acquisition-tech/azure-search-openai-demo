@@ -1,21 +1,14 @@
-import { Stack } from "@fluentui/react";
-import { useId } from "@fluentui/react-hooks";
 import { useTranslation } from "react-i18next";
-
-import styles from "./AIModeSettings.module.css";
-import { HelpCallout } from "../../components/HelpCallout";
 import { AIMode } from "../../api";
+import styles from "./AIModeToggle.module.css";
 
 interface Props {
     currentAIMode: AIMode;
     updateAIMode: (aiMode: AIMode) => void;
 }
 
-export const AIModeSettings = ({ currentAIMode, updateAIMode }: Props) => {
+export const AIModeToggle = ({ currentAIMode, updateAIMode }: Props) => {
     const { t } = useTranslation();
-
-    const aiModeId = useId("aiMode");
-    const aiModeFieldId = useId("aiModeField");
 
     const handleModeChange = (selectedMode: AIMode) => {
         updateAIMode(selectedMode);
@@ -35,9 +28,7 @@ export const AIModeSettings = ({ currentAIMode, updateAIMode }: Props) => {
     };
 
     return (
-        <Stack className={styles.container} tokens={{ childrenGap: 10 }}>
-            <HelpCallout labelId={aiModeId} fieldId={aiModeFieldId} helpText={t("helpTexts.aiMode")} label={t("labels.aiMode.label")} />
-
+        <div className={styles.aiModeToggle}>
             <div className={styles.optionSlider}>
                 <div className={styles.sliderTrack}>
                     <div className={styles.sliderThumb} style={{ left: getModePosition(currentAIMode) }}>
@@ -68,6 +59,6 @@ export const AIModeSettings = ({ currentAIMode, updateAIMode }: Props) => {
                     </div>
                 </div>
             </div>
-        </Stack>
+        </div>
     );
 };

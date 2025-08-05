@@ -31,6 +31,7 @@ import { HistoryButton } from "../../components/HistoryButton";
 import { SettingsButton } from "../../components/SettingsButton";
 import { ClearChatButton } from "../../components/ClearChatButton";
 import { UploadFile } from "../../components/UploadFile";
+import { AIModeToggle } from "../../components/AIModeToggle";
 import { useLogin, getToken, requireAccessControl } from "../../authConfig";
 import { useMsal } from "@azure/msal-react";
 import { TokenClaimsDisplay } from "../../components/TokenClaimsDisplay";
@@ -412,6 +413,9 @@ const Chat = () => {
                     {((useLogin && showChatHistoryCosmos) || showChatHistoryBrowser) && (
                         <HistoryButton className={styles.commandButton} onClick={() => setIsHistoryPanelOpen(!isHistoryPanelOpen)} />
                     )}
+                </div>
+                <div className={styles.commandsCenter}>
+                    <AIModeToggle currentAIMode={aiMode} updateAIMode={setAIMode} />
                 </div>
                 <div className={styles.commandsContainer}>
                     <ClearChatButton className={styles.commandButton} onClick={clearChat} disabled={!lastQuestionRef.current || isLoading} />
