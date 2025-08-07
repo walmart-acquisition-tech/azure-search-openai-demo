@@ -4,9 +4,11 @@
     padding-right: 1rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.625rem;
+    gap: 0.5rem; /* Reduced gap for tighter spacing */
     flex: 1;
     justify-content: center;
+    margin-top: 1rem; /* Add some top margin */
+    margin-bottom: 2rem; /* Add bottom margin for better centering */
 }
 
 .example {
@@ -15,7 +17,7 @@
     border-radius: 0.5rem;
     display: flex;
     flex-direction: column;
-    margin-bottom: 0.3125rem;
+    margin-bottom: 0.125rem; /* Much smaller bottom margin */
     cursor: pointer;
 }
 
@@ -28,10 +30,10 @@
 
 .exampleText {
     margin: 0;
-    font-size: 1.25rem;
-    width: 25rem;
-    padding: 0.5rem;
-    min-height: 4.5rem;
+    font-size: 1.1rem; /* Smaller font for mobile */
+    width: 22rem; /* Slightly smaller width for mobile */
+    padding: 0.75rem; /* Increased padding for better touch target */
+    min-height: 3.5rem; /* Reduced min-height for tighter spacing */
 }
 
 .examplesNavList li {
@@ -39,8 +41,43 @@
 }
 
 .examplesNavList li:nth-of-type(1),
-.examplesNavList li:nth-of-type(2) {
-    display: block; /* Default to showing two list items */
+.examplesNavList li:nth-of-type(2),
+.examplesNavList li:nth-of-type(3) {
+    display: block; /* Show all three list items on mobile and tablet */
+}
+
+/* Mobile-specific adjustments */
+@media only screen and (max-width: 600px) {
+    .examplesNavList {
+        gap: 0.5rem; /* Consistent gap between boxes */
+        margin-top: 0.5rem; /* Small top margin */
+        margin-bottom: 1rem; /* Reasonable bottom margin */
+        flex-direction: column; /* Stack vertically on mobile */
+        align-items: center; /* Center the boxes */
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .example {
+        margin-bottom: 0; /* No additional margin, use gap instead */
+        width: 100%; /* Full width on mobile */
+        max-width: 22rem; /* Consistent with desktop-like sizing */
+        min-height: 4rem; /* Fixed minimum height for consistency */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0; /* Remove padding from container, let text handle it */
+    }
+
+    .exampleText {
+        font-size: 0.95rem; /* Slightly larger font for readability */
+        width: 100%; /* Full width of container */
+        padding: 1rem; /* Consistent padding like desktop */
+        min-height: auto; /* Let content determine height */
+        text-align: left; /* Left align like desktop */
+        display: block; /* Standard block display */
+        line-height: 1.4; /* Better line spacing */
+    }
 }
 
 @media only screen and (min-width: 992px) {

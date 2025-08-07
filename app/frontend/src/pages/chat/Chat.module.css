@@ -96,13 +96,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem;
 }
 
 .commandsContainer {
     display: flex;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
     align-self: flex-end;
+    min-width: 0;
 }
 
 .commandsCenter {
@@ -110,11 +116,105 @@
     justify-content: center;
     align-items: center;
     flex: 1;
-    margin-left: 85px;
+    margin-left: 0;
+    min-width: 0;
+    order: 1;
 }
 
 .commandButton {
     margin-bottom: 1.25rem;
+}
+
+/* Small phones - stack everything vertically */
+@media (max-width: 600px) {
+    .commandsSplitContainer {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem;
+    }
+
+    .commandsContainer {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        padding: 0.25rem;
+        width: 100%;
+    }
+
+    /* Left-align the first container for history button */
+    .commandsContainer:first-child {
+        justify-content: flex-start;
+        align-self: flex-start;
+    }
+
+    .commandsCenter {
+        order: -1;
+        margin-left: 0;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        text-align: center;
+    }
+
+    .commandButton {
+        margin: 0.25rem;
+        font-size: 0.875rem;
+        min-width: 120px;
+    }
+
+    /* Make chat container fill available space without forcing scroll */
+    .chatContainer {
+        min-height: calc(100vh - 18rem);
+        justify-content: space-between;
+    }
+
+    .chatEmptyState {
+        flex-grow: 1;
+        justify-content: center;
+        padding-top: 1rem;
+    }
+
+    /* Position chat input at bottom on mobile */
+    .chatInput {
+        margin-top: auto;
+        position: sticky;
+        bottom: 0;
+    }
+}
+
+/* Larger phones and small tablets - keep horizontal layout */
+@media (min-width: 601px) and (max-width: 991px) {
+    .commandsSplitContainer {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    .commandsContainer {
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        padding: 0.25rem;
+        flex: 1;
+        min-width: 0;
+        max-width: 200px;
+    }
+
+    .commandsCenter {
+        order: 0;
+        margin-left: 0;
+        flex: 2;
+        text-align: center;
+        max-width: none;
+    }
+
+    .commandButton {
+        margin: 0.25rem;
+        font-size: 0.875rem;
+    }
 }
 
 @media (min-width: 992px) {
@@ -132,15 +232,26 @@
 
     .chatInput {
         padding: 0.75rem 1.5rem 1.5rem;
+        position: relative; /* Override sticky positioning for desktop */
+        bottom: auto; /* Reset bottom positioning */
+        margin-top: 0; /* Reset margin */
     }
 
     .commandsSplitContainer {
         padding-left: 1rem;
+        flex-wrap: nowrap;
+        gap: 1rem;
     }
 
     .commandsContainer {
         padding-left: 0rem;
         padding-right: 0rem;
+        flex-wrap: nowrap;
+    }
+
+    .commandsCenter {
+        margin-left: 20px;
+        order: 0;
     }
 
     .commandButton {
