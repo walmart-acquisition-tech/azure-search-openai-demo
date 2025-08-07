@@ -25,6 +25,13 @@
     flex: 1;
 }
 
+/* Force iPad logo positioning with maximum specificity */
+@media screen and (min-width: 768px) and (max-width: 1199px) {
+    .layout .header .headerContainer .headerLeft {
+        gap: 0.1rem !important;
+    }
+}
+
 .headerCenter {
     flex: 1;
     display: none; /* Hidden on mobile, shown on desktop */
@@ -126,7 +133,70 @@
     gap: 0; /* Ensure no gap between login button and menu toggle */
 }
 
-@media (min-width: 992px) {
+/* iPad specific styles - must come first to avoid conflicts */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .headerLeft {
+        gap: 0.25rem !important; /* Very minimal gap for iPad */
+    }
+
+    .headerTitle {
+        font-weight: 600;
+    }
+
+    .headerCenter {
+        display: flex !important;
+    }
+
+    .headerLogo {
+        height: 65px; /* Slightly smaller on tablets */
+    }
+
+    .headerNavList {
+        display: flex;
+        flex-direction: row;
+        list-style: none;
+        padding: 0;
+        position: static;
+        width: auto;
+        background-color: transparent;
+    }
+
+    .headerNavPageLink {
+        border-bottom: none;
+        padding: 0;
+        display: block;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .headerNavPageLink:hover {
+        opacity: 1;
+    }
+
+    .headerNavPageLinkActive {
+        color: #f2f2f2;
+        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+}
+
+/* Additional specific iPad breakpoints to ensure coverage */
+@media (width: 1180px), (width: 820px), (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+    .headerLeft {
+        gap: 0.1rem !important; /* Even smaller gap for common iPad resolutions */
+    }
+}
+
+/* Specific fix for iPad 11" at 1180x820 */
+@media (min-width: 1180px) and (max-width: 1180px) {
+    .headerLeft {
+        gap: 3rem !important; /* Further increased gap for iPad 11" to prevent overlap */
+    }
+}
+
+@media (min-width: 1200px) {
+    /* Desktop-specific styles */
     .headerTitle {
         font-weight: 600;
     }
@@ -136,11 +206,11 @@
     }
 
     .headerLeft {
-        gap: 34rem; /* Much more space between title and logo on desktop */
+        gap: 34rem; /* Large gap for desktop */
     }
 
     .headerLogo {
-        height: 70px; /* Even bigger on desktop */
+        height: 70px; /* Bigger on desktop */
     }
 
     .headerNavList {

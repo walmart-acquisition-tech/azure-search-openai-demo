@@ -2,11 +2,14 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    margin-left: 205px;
+    margin-left: 0;
+    justify-content: center;
+    width: 100%;
 }
 
 .optionSlider {
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
     position: relative;
     user-select: none;
 }
@@ -64,4 +67,57 @@
 .sliderOption.active {
     font-weight: bold;
     color: #fff;
+}
+
+/* Small phones */
+@media (max-width: 600px) {
+    .aiModeToggle {
+        margin-left: 0;
+        justify-content: center;
+    }
+
+    .optionSlider {
+        max-width: 280px;
+        min-width: 250px;
+    }
+
+    .sliderOption {
+        font-size: 10px;
+    }
+
+    .sliderThumb {
+        font-size: 10px;
+    }
+}
+
+/* Larger phones and tablets */
+@media (min-width: 601px) and (max-width: 991px) {
+    .aiModeToggle {
+        margin-left: 0;
+        justify-content: center;
+    }
+
+    .optionSlider {
+        max-width: 300px;
+        min-width: 280px;
+    }
+
+    .sliderOption {
+        font-size: 11px;
+    }
+
+    .sliderThumb {
+        font-size: 11px;
+    }
+}
+
+@media (min-width: 992px) {
+    .aiModeToggle {
+        margin-left: 205px;
+    }
+
+    .optionSlider {
+        width: 300px;
+        max-width: 300px;
+    }
 }
