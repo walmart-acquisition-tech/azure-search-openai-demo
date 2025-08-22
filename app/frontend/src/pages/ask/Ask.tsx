@@ -5,7 +5,7 @@ import { Panel, DefaultButton, Spinner } from "@fluentui/react";
 
 import styles from "./Ask.module.css";
 
-import { askApi, configApi, ChatAppResponse, ChatAppRequest, RetrievalMode, VectorFields, GPT4VInput, SpeechConfig } from "../../api";
+import { askApi, configApi, ChatAppResponse, ChatAppRequest, RetrievalMode, AIMode, VectorFields, GPT4VInput, SpeechConfig } from "../../api";
 import { Answer, AnswerError } from "../../components/Answer";
 import { QuestionInput } from "../../components/QuestionInput";
 import { ExampleList } from "../../components/Example";
@@ -29,6 +29,7 @@ export function Component(): JSX.Element {
     const [minimumRerankerScore, setMinimumRerankerScore] = useState<number>(0);
     const [minimumSearchScore, setMinimumSearchScore] = useState<number>(0);
     const [retrievalMode, setRetrievalMode] = useState<RetrievalMode>(RetrievalMode.Hybrid);
+    const [aiMode, setAIMode] = useState<AIMode>(AIMode.DataAndOpenAI);
     const [retrieveCount, setRetrieveCount] = useState<number>(3);
     const [maxSubqueryCount, setMaxSubqueryCount] = useState<number>(10);
     const [resultsMergeStrategy, setResultsMergeStrategy] = useState<string>("interleaved");
@@ -145,6 +146,7 @@ export function Component(): JSX.Element {
                         minimum_reranker_score: minimumRerankerScore,
                         minimum_search_score: minimumSearchScore,
                         retrieval_mode: retrievalMode,
+                        ai_mode: aiMode,
                         semantic_ranker: useSemanticRanker,
                         semantic_captions: useSemanticCaptions,
                         query_rewriting: useQueryRewriting,
@@ -239,6 +241,9 @@ export function Component(): JSX.Element {
                 break;
             case "retrievalMode":
                 setRetrievalMode(value);
+                break;
+            case "aiMode":
+                setAIMode(value);
                 break;
             case "useAgenticRetrieval":
                 setUseAgenticRetrieval(value);
@@ -366,6 +371,7 @@ export function Component(): JSX.Element {
                     excludeCategory={excludeCategory}
                     includeCategory={includeCategory}
                     retrievalMode={retrievalMode}
+                    aiMode={aiMode}
                     useGPT4V={useGPT4V}
                     gpt4vInput={gpt4vInput}
                     vectorFields={vectorFields}

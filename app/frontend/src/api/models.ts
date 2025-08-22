@@ -4,6 +4,12 @@ export const enum RetrievalMode {
     Text = "text"
 }
 
+export const enum AIMode {
+    DataOnly = "data_only",
+    OpenAIOnly = "openai_only",
+    DataAndOpenAI = "data_and_openai"
+}
+
 export const enum GPT4VInput {
     TextAndImages = "textAndImages",
     Images = "images",
@@ -18,6 +24,7 @@ export const enum VectorFields {
 
 export type ChatAppRequestOverrides = {
     retrieval_mode?: RetrievalMode;
+    ai_mode?: AIMode;
     semantic_ranker?: boolean;
     semantic_captions?: boolean;
     query_rewriting?: boolean;

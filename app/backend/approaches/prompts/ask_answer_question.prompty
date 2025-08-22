@@ -22,6 +22,10 @@ If you cannot answer using the sources below, say you don't know. Use below exam
 {{ injected_prompt }}
 {% endif %}
 
+{% if ai_mode_instruction %}
+{{ ai_mode_instruction }}
+{% endif %}
+
 user:
 What is the deductible for the employee plan for a visit to Overlake in Bellevue?
 

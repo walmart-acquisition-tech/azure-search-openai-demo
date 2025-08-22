@@ -81,6 +81,21 @@ class ChatReadRetrieveReadVisionApproach(ChatApproach):
         should_stream: bool = False,
     ) -> tuple[ExtraInfo, Union[Awaitable[ChatCompletion], Awaitable[AsyncStream[ChatCompletionChunk]]]]:
         seed = overrides.get("seed", None)
+        ai_mode = overrides.get("ai_mode", "data_and_openai")
+        
+        # If OpenAI only mode, skip search entirely and use only OpenAI knowledge
+        if ai_mode == "openai_only":
+            return ExtraInfo(
+                data_points=DataPoints(text=[], images=[]),
+                thoughts=[
+                    ThoughtStep(
+                        title="AI Mode: OpenAI Only",
+                        description="Using OpenAI's built-in knowledge without searching documents",
+                        props={}
+                    )
+                ]
+            )
+        
         use_text_search = overrides.get("retrieval_mode") in ["text", "hybrid", None]
         use_vector_search = overrides.get("retrieval_mode") in ["vectors", "hybrid", None]
         use_semantic_ranker = True if overrides.get("semantic_ranker") else False
