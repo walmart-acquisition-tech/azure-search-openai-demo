@@ -73,7 +73,7 @@ Once tests are passing, generate a coverage report to make sure your changes are
 
 ```shell
 pytest --cov --cov-report=xml && \
-diff-cover coverage.xml --format html:coverage_report.html && \
+diff-cover coverage.xml --html-report coverage_report.html && \
 open coverage_report.html
 ```
 
@@ -130,8 +130,8 @@ If you followed the steps above to install the pre-commit hooks, then you can ju
 ## Adding new features
 
 We recommend using GitHub Copilot Agent mode when adding new features,
-as this project includes [.github/copilot-instructions.md](.github/copilot-instructions.md) file
-that instructs Copilot on how to generate code for common code changes.
+as this project includes an [AGENTS.md](AGENTS.md) file
+that instructs Copilot (and other coding agents) about how to generate code for common code changes.
 
 If you are not using Copilot Agent mode, consult both that file and suggestions below.
 
@@ -141,7 +141,6 @@ When adding new azd environment variables, please remember to update:
 
 1. [main.parameters.json](./infra/main.parameters.json)
 1. [appEnvVariables in main.bicep](./infra/main.bicep)
-1. App Service's [azure.yaml](./azure.yaml)
 1. [ADO pipeline](.azdo/pipelines/azure-dev.yml).
 1. [Github workflows](.github/workflows/azure-dev.yml)
 
@@ -163,3 +162,5 @@ Here are community contributors that can review translations:
 | Spanish  | @miguelmsft         |
 | Turkish  | @mertcakdogan       |
 | Italian  | @ivanvaccarics      |
+| Dutch    |                     |
+| Polish   | @michuhu            |

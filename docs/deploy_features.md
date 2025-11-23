@@ -6,13 +6,13 @@ You should typically enable these features before running `azd up`. Once you've 
 * [Using different chat completion models](#using-different-chat-completion-models)
 * [Using reasoning models](#using-reasoning-models)
 * [Using different embedding models](#using-different-embedding-models)
-* [Enabling GPT vision feature](#enabling-gpt-vision-feature)
+* [Enabling multimodal embeddings and answering](#enabling-multimodal-embeddings-and-answering)
 * [Enabling media description with Azure Content Understanding](#enabling-media-description-with-azure-content-understanding)
+* [Enabling cloud data ingestion](#enabling-cloud-data-ingestion)
 * [Enabling client-side chat history](#enabling-client-side-chat-history)
 * [Enabling persistent chat history with Azure Cosmos DB](#enabling-persistent-chat-history-with-azure-cosmos-db)
 * [Enabling language picker](#enabling-language-picker)
 * [Enabling speech input/output](#enabling-speech-inputoutput)
-* [Enabling Integrated Vectorization](#enabling-integrated-vectorization)
 * [Enabling authentication](#enabling-authentication)
 * [Enabling login and document level access control](#enabling-login-and-document-level-access-control)
 * [Enabling user document upload](#enabling-user-document-upload)
@@ -114,7 +114,7 @@ As of early June 2025, the default chat completion model is `gpt-4.1-mini`. If y
     azd env set AZURE_OPENAI_CHATGPT_DEPLOYMENT_VERSION 0125
     ```
 
-1. To set the Azure OpenAI deployment SKU name, run this command with [the desired SKU name](https://learn.microsoft.com/azure/ai-services/openai/how-to/deployment-types#deployment-types).
+1. To set the Azure OpenAI deployment SKU name, run this command with [the desired SKU name](https://learn.microsoft.com/azure/ai-foundry/foundry-models/concepts/deployment-types).
 
     For GlobalStandard:
 
@@ -147,14 +147,10 @@ This process does *not* delete your previous model deployment. If you want to de
 
 ## Using reasoning models
 
-⚠️ This feature is not currently compatible with [vision integration](./gpt4v.md).
-
 This feature allows you to use reasoning models to generate responses based on retrieved content. These models spend more time processing and understanding the user's request.
 To enable reasoning models, follow the steps in [the reasoning models guide](./reasoning.md).
 
 ## Using agentic retrieval
-
-⚠️ This feature is not currently compatible with [vision integration](./gpt4v.md).
 
 This feature allows you to use agentic retrieval in place of the Search API. To enable agentic retrieval, follow the steps in [the agentic retrieval guide](./agentic_retrieval.md)
 
@@ -210,7 +206,7 @@ By default, the deployed Azure web app uses the `text-embedding-3-large` embeddi
     azd env set AZURE_OPENAI_EMB_DEPLOYMENT_VERSION 1
     ```
 
-4. To set the embedding model deployment SKU name, run this command with [the desired SKU name](https://learn.microsoft.com/azure/ai-services/openai/how-to/deployment-types#deployment-types).
+4. To set the embedding model deployment SKU name, run this command with [the desired SKU name](https://learn.microsoft.com/azure/ai-foundry/foundry-models/concepts/deployment-types).
 
     For GlobalStandard:
 
@@ -231,16 +227,17 @@ If you have already deployed:
 * You'll need to change the deployment name by running the appropriate commands for the model above.
 * You'll need to create a new index, and re-index all of the data using the new model. You can either delete the current index in the Azure Portal, or create an index with a different name by running `azd env set AZURE_SEARCH_INDEX new-index-name`. When you next run `azd up`, the new index will be created. See the [data ingestion guide](./data_ingestion.md) for more details.
 
-## Enabling GPT vision feature
+## Enabling multimodal embeddings and answering
 
-⚠️ This feature is not currently compatible with [integrated vectorization](#enabling-integrated-vectorization).
+When your documents include images, you can optionally enable this feature that can
+use image embeddings when searching and also use images when answering questions.
 
-This section covers the integration of GPT vision models with Azure AI Search. Learn how to enhance your search capabilities with the power of image and text indexing, enabling advanced search functionalities over diverse document types. For a detailed guide on setup and usage, visit our page on [Using GPT vision model with RAG approach](gpt4v.md).
+Learn more in the [multimodal guide](./multimodal.md).
 
 ## Enabling media description with Azure Content Understanding
 
-⚠️ This feature is not currently compatible with [integrated vectorization](#enabling-integrated-vectorization).
-It is compatible with [GPT vision integration](./gpt4v.md), but the features provide similar functionality.
+⚠️ This feature is compatible with the [multimodal feature](./multimodal.md), but this feature enables only a subset of multimodal capabilities,
+so you may want to enable the multimodal feature instead or as well.
 
 By default, if your documents contain image-like figures, the data ingestion process will ignore those figures,
 so users will not be able to ask questions about them.
@@ -259,6 +256,12 @@ first [remove the existing documents](./data_ingestion.md#removing-documents) an
 
 ⚠️ This feature does not yet support DOCX, PPTX, or XLSX formats. If you have figures in those formats, they will be ignored.
 Convert them first to PDF or image formats to enable media description.
+
+## Enabling cloud data ingestion
+
+By default, this project runs a local script in order to ingest data. Once you move beyond the sample documents, you may want to enable [cloud ingestion](./data_ingestion.md#cloud-ingestion), which uses Azure AI Search indexers and custom Azure AI Search skills based off the same code used by the local ingestion. That approach scales better to larger amounts of data.
+
+Learn more in the [cloud ingestion guide](./data_ingestion.md#cloud-ingestion).
 
 ## Enabling client-side chat history
 
@@ -284,7 +287,7 @@ When both the browser-stored and Cosmos DB options are enabled, Cosmos DB will t
 
 ## Enabling language picker
 
-You can optionally enable the language picker to allow users to switch between different languages. Currently, it supports English, Spanish, French, and Japanese.
+You can optionally enable the language picker to allow users to switch between different languages. Currently, it supports English, Spanish, French, Japanese, Danish, Dutch, Brasilian Portugese, Turkish, Italian and Polish.
 
 To add support for additional languages, create new locale files and update `app/frontend/src/i18n/config.ts` accordingly. To enable language picker, run:
 
@@ -326,33 +329,6 @@ Alternatively you can use the browser's built-in [Speech Synthesis API](https://
 azd env set USE_SPEECH_OUTPUT_BROWSER true
 ```
 
-## Enabling Integrated Vectorization
-
-⚠️ This feature is not currently compatible with the [GPT vision integration](./gpt4v.md).
-
-Azure AI search recently introduced an [integrated vectorization feature in preview mode](https://techcommunity.microsoft.com/blog/azure-ai-services-blog/announcing-the-public-preview-of-integrated-vectorization-in-azure-ai-search/3960809). This feature is a cloud-based approach to data ingestion, which takes care of document format cracking, data extraction, chunking, vectorization, and indexing, all with Azure technologies.
-
-To enable integrated vectorization with this sample:
-
-1. If you've previously deployed, delete the existing search index. 🗑️
-2. To enable the use of integrated vectorization, run:
-
-    ```shell
-    azd env set USE_FEATURE_INT_VECTORIZATION true
-    ```
-
-3. If you've already deployed your app, then you can run just the `provision` step:
-
-    ```shell
-    azd provision
-    ```
-
-    That will set up necessary RBAC roles and configure the integrated vectorization feature on your search service.
-
-    If you haven't deployed your app yet, then you should run the full `azd up` after configuring all optional features.
-
-4. You can view the resources such as the indexer and skillset in Azure Portal and monitor the status of the vectorization process.
-
 ## Enabling authentication
 
 By default, the deployed Azure web app will have no authentication or access restrictions enabled, meaning anyone with routable network access to the web app can chat with your indexed data. If you'd like to automatically setup authentication and user login as part of the `azd up` process, see [this guide](./login_and_acl.md).
@@ -373,7 +349,7 @@ You can enable an optional user document upload system to allow users to upload 
 
 Then you'll need to run `azd up` to provision an Azure Data Lake Storage Gen2 account for storing the user-uploaded documents.
 When the user uploads a document, it will be stored in a directory in that account with the same name as the user's Entra object id,
-and will have ACLs associated with that directory. When the ingester runs, it will also set the `oids` of the indexed chunks to the user's Entra object id.
+and will have ACLs associated with that directory. When the ingester runs, it will also set the `oids` of the indexed chunks to the user's Entra object id. Whenever any content is retrieved or added to the directory, the "owner" property will be checked to ensure that the user is the owner of the directory, and thus has access to the content.
 
 If you are enabling this feature on an existing index, you should also update your index to have the new `storageUrl` field:
 

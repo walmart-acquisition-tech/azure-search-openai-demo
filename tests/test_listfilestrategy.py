@@ -3,6 +3,7 @@ import io
 import os
 import tempfile
 
+import azure
 import pytest
 
 from prepdocslib.listfilestrategy import (
@@ -84,6 +85,8 @@ async def test_locallistfilestrategy():
         assert files[0].filename() == "a.pdf"
         assert files[1].filename() == "b.pdf"
         assert files[2].filename() == "c.pdf"
+        for file in files:
+            file.close()
 
 
 @pytest.mark.asyncio
@@ -112,6 +115,8 @@ async def test_locallistfilestrategy_nesteddir():
         assert files[0].filename() == "a.pdf"
         assert files[1].filename() == "b.pdf"
         assert files[2].filename() == "c.pdf"
+        for file in files:
+            file.close()
 
 
 def test_locallistfilestrategy_checkmd5():
@@ -132,6 +137,21 @@ def test_locallistfilestrategy_checkmd5():
 
 
 @pytest.mark.asyncio
+async def test_locallistfilestrategy_global():
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        for filename in ["a.pdf", "b.pdf", "c.pdf"]:
+            with open(os.path.join(tmpdirname, filename), "w") as f:
+                f.write("test")
+        local_list_strategy = LocalListFileStrategy(path_pattern=f"{tmpdirname}/*", enable_global_documents=True)
+
+        files = [file async for file in local_list_strategy.list()]
+        assert len(files) == 3
+        for file in files:
+            assert file.acls == {"oids": ["all"], "groups": ["all"]}
+            file.close()
+
+
+@pytest.mark.asyncio
 async def test_read_adls_gen2_files(monkeypatch, mock_data_lake_service_client):
     adlsgen2_list_strategy = ADLSGen2ListFileStrategy(
         data_lake_storage_account="a", data_lake_filesystem="a", data_lake_path="a", credential=MockAzureCredential()
@@ -145,3 +165,67 @@ async def test_read_adls_gen2_files(monkeypatch, mock_data_lake_service_client):
     assert files[1].acls == {"oids": ["B-USER-ID"], "groups": ["B-GROUP-ID"]}
     assert files[2].filename() == "c.txt"
     assert files[2].acls == {"oids": ["C-USER-ID"], "groups": ["C-GROUP-ID"]}
+
+
+@pytest.mark.asyncio
+async def test_read_adls_gen2_files_global(monkeypatch, mock_data_lake_service_client):
+    async def mock_get_access_control(self, *args, **kwargs):
+        if self.path == "a.txt":
+            return {"acl": "user:A-USER-ID:r-x,group:A-GROUP-ID:r-x"}
+        if self.path == "b.txt":
+            return {"acl": "user:B-USER-ID:r-x,group:B-GROUP-ID:r-x"}
+        if self.path == "c.txt":
+            return {"acl": ""}
+
+    monkeypatch.setattr(
+        azure.storage.filedatalake.aio.DataLakeFileClient, "get_access_control", mock_get_access_control
+    )
+
+    adlsgen2_list_strategy = ADLSGen2ListFileStrategy(
+        data_lake_storage_account="a",
+        data_lake_filesystem="a",
+        data_lake_path="a",
+        credential=MockAzureCredential(),
+        enable_global_documents=True,
+    )
+
+    files = [file async for file in adlsgen2_list_strategy.list()]
+    assert len(files) == 3
+    assert files[0].filename() == "a.txt"
+    assert files[0].acls == {"oids": ["A-USER-ID"], "groups": ["A-GROUP-ID"]}
+    assert files[1].filename() == "b.txt"
+    assert files[1].acls == {"oids": ["B-USER-ID"], "groups": ["B-GROUP-ID"]}
+    assert files[2].filename() == "c.txt"
+    assert files[2].acls == {"oids": ["all"], "groups": ["all"]}
+
+
+@pytest.mark.asyncio
+async def test_read_adls_gen2_files_no_global(monkeypatch, mock_data_lake_service_client):
+    async def mock_get_access_control(self, *args, **kwargs):
+        if self.path == "a.txt":
+            return {"acl": "user:A-USER-ID:r-x,group:A-GROUP-ID:r-x"}
+        if self.path == "b.txt":
+            return {"acl": "user:B-USER-ID:r-x,group:B-GROUP-ID:r-x"}
+        if self.path == "c.txt":
+            return {"acl": ""}
+
+    monkeypatch.setattr(
+        azure.storage.filedatalake.aio.DataLakeFileClient, "get_access_control", mock_get_access_control
+    )
+
+    adlsgen2_list_strategy = ADLSGen2ListFileStrategy(
+        data_lake_storage_account="a",
+        data_lake_filesystem="a",
+        data_lake_path="a",
+        credential=MockAzureCredential(),
+        enable_global_documents=False,
+    )
+
+    files = [file async for file in adlsgen2_list_strategy.list()]
+    assert len(files) == 3
+    assert files[0].filename() == "a.txt"
+    assert files[0].acls == {"oids": ["A-USER-ID"], "groups": ["A-GROUP-ID"]}
+    assert files[1].filename() == "b.txt"
+    assert files[1].acls == {"oids": ["B-USER-ID"], "groups": ["B-GROUP-ID"]}
+    assert files[2].filename() == "c.txt"
+    assert files[2].acls == {"oids": [], "groups": []}

@@ -16,8 +16,10 @@ def minimal_env(monkeypatch):
         monkeypatch.setenv("AZURE_SEARCH_SERVICE", "test-search-service")
         monkeypatch.setenv("AZURE_OPENAI_SERVICE", "test-openai-service")
         monkeypatch.setenv("AZURE_OPENAI_CHATGPT_MODEL", "gpt-4.1-mini")
+        monkeypatch.setenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT", "test-chat-deployment")
         monkeypatch.setenv("AZURE_OPENAI_EMB_MODEL_NAME", "text-embedding-3-large")
         monkeypatch.setenv("AZURE_OPENAI_EMB_DIMENSIONS", "3072")
+        monkeypatch.setenv("AZURE_OPENAI_EMB_DEPLOYMENT", "test-emb-deployment")
         yield
 
 
@@ -41,7 +43,7 @@ async def test_app_azure_custom_key(monkeypatch, minimal_env):
     quart_app = app.create_app()
     async with quart_app.test_app():
         assert quart_app.config[app.CONFIG_OPENAI_CLIENT].api_key == "azure-api-key"
-        assert quart_app.config[app.CONFIG_OPENAI_CLIENT].base_url == "http://azureapi.com/api/v1/openai/"
+        assert quart_app.config[app.CONFIG_OPENAI_CLIENT].base_url == "http://azureapi.com/api/v1/"
 
 
 @pytest.mark.asyncio
@@ -51,14 +53,18 @@ async def test_app_azure_custom_identity(monkeypatch, minimal_env):
 
     quart_app = app.create_app()
     async with quart_app.test_app():
-        assert quart_app.config[app.CONFIG_OPENAI_CLIENT].api_key == "<missing API key>"
-        assert quart_app.config[app.CONFIG_OPENAI_CLIENT].base_url == "http://azureapi.com/api/v1/openai/"
+        openai_client = quart_app.config[app.CONFIG_OPENAI_CLIENT]
+        assert openai_client.api_key == ""
+        # The AsyncOpenAI client stores the callable inside _api_key_provider
+        assert getattr(openai_client, "_api_key_provider", None) is not None
+        assert str(openai_client.base_url) == "http://azureapi.com/api/v1/"
 
 
 @pytest.mark.asyncio
 async def test_app_user_upload_processors(monkeypatch, minimal_env):
     monkeypatch.setenv("AZURE_USERSTORAGE_ACCOUNT", "test-user-storage-account")
     monkeypatch.setenv("AZURE_USERSTORAGE_CONTAINER", "test-user-storage-container")
+    monkeypatch.setenv("AZURE_ENFORCE_ACCESS_CONTROL", "true")
     monkeypatch.setenv("USE_USER_UPLOAD", "true")
 
     quart_app = app.create_app()
@@ -69,9 +75,38 @@ async def test_app_user_upload_processors(monkeypatch, minimal_env):
 
 
 @pytest.mark.asyncio
+async def test_app_user_upload_requires_storage_configuration(monkeypatch, minimal_env):
+    monkeypatch.setenv("USE_USER_UPLOAD", "true")
+
+    quart_app = app.create_app()
+    with pytest.raises(
+        quart.testing.app.LifespanError,
+        match="AZURE_USERSTORAGE_ACCOUNT and AZURE_USERSTORAGE_CONTAINER must be set when USE_USER_UPLOAD is true",
+    ):
+        async with quart_app.test_app():
+            pass
+
+
+@pytest.mark.asyncio
+async def test_app_user_upload_requires_enforce_access_control(monkeypatch, minimal_env):
+    monkeypatch.setenv("USE_USER_UPLOAD", "true")
+    monkeypatch.setenv("AZURE_USERSTORAGE_ACCOUNT", "test-user-storage-account")
+    monkeypatch.setenv("AZURE_USERSTORAGE_CONTAINER", "test-user-storage-container")
+
+    quart_app = app.create_app()
+    with pytest.raises(
+        quart.testing.app.LifespanError,
+        match="AZURE_ENFORCE_ACCESS_CONTROL must be true when USE_USER_UPLOAD is true",
+    ):
+        async with quart_app.test_app():
+            pass
+
+
+@pytest.mark.asyncio
 async def test_app_user_upload_processors_docint(monkeypatch, minimal_env):
     monkeypatch.setenv("AZURE_USERSTORAGE_ACCOUNT", "test-user-storage-account")
     monkeypatch.setenv("AZURE_USERSTORAGE_CONTAINER", "test-user-storage-container")
+    monkeypatch.setenv("AZURE_ENFORCE_ACCESS_CONTROL", "true")
     monkeypatch.setenv("USE_USER_UPLOAD", "true")
     monkeypatch.setenv("AZURE_DOCUMENTINTELLIGENCE_SERVICE", "test-docint-service")
 
@@ -86,6 +121,7 @@ async def test_app_user_upload_processors_docint(monkeypatch, minimal_env):
 async def test_app_user_upload_processors_docint_localpdf(monkeypatch, minimal_env):
     monkeypatch.setenv("AZURE_USERSTORAGE_ACCOUNT", "test-user-storage-account")
     monkeypatch.setenv("AZURE_USERSTORAGE_CONTAINER", "test-user-storage-container")
+    monkeypatch.setenv("AZURE_ENFORCE_ACCESS_CONTROL", "true")
     monkeypatch.setenv("USE_USER_UPLOAD", "true")
     monkeypatch.setenv("AZURE_DOCUMENTINTELLIGENCE_SERVICE", "test-docint-service")
     monkeypatch.setenv("USE_LOCAL_PDF_PARSER", "true")
@@ -102,6 +138,7 @@ async def test_app_user_upload_processors_docint_localpdf(monkeypatch, minimal_e
 async def test_app_user_upload_processors_docint_localhtml(monkeypatch, minimal_env):
     monkeypatch.setenv("AZURE_USERSTORAGE_ACCOUNT", "test-user-storage-account")
     monkeypatch.setenv("AZURE_USERSTORAGE_CONTAINER", "test-user-storage-container")
+    monkeypatch.setenv("AZURE_ENFORCE_ACCESS_CONTROL", "true")
     monkeypatch.setenv("USE_USER_UPLOAD", "true")
     monkeypatch.setenv("AZURE_DOCUMENTINTELLIGENCE_SERVICE", "test-docint-service")
     monkeypatch.setenv("USE_LOCAL_HTML_PARSER", "true")
@@ -122,9 +159,10 @@ async def test_app_config_default(monkeypatch, minimal_env):
         response = await client.get("/config")
         assert response.status_code == 200
         result = await response.get_json()
-        assert result["showGPT4VOptions"] is False
+        assert result["showMultimodalOptions"] is False
         assert result["showSemanticRankerOption"] is True
         assert result["showVectorOption"] is True
+        assert result["defaultRetrievalReasoningEffort"] == "low"
 
 
 @pytest.mark.asyncio
@@ -136,7 +174,7 @@ async def test_app_config_use_vectors_true(monkeypatch, minimal_env):
         response = await client.get("/config")
         assert response.status_code == 200
         result = await response.get_json()
-        assert result["showGPT4VOptions"] is False
+        assert result["showMultimodalOptions"] is False
         assert result["showSemanticRankerOption"] is True
         assert result["showVectorOption"] is True
 
@@ -150,7 +188,7 @@ async def test_app_config_use_vectors_false(monkeypatch, minimal_env):
         response = await client.get("/config")
         assert response.status_code == 200
         result = await response.get_json()
-        assert result["showGPT4VOptions"] is False
+        assert result["showMultimodalOptions"] is False
         assert result["showSemanticRankerOption"] is True
         assert result["showVectorOption"] is False
 
@@ -164,7 +202,7 @@ async def test_app_config_semanticranker_free(monkeypatch, minimal_env):
         response = await client.get("/config")
         assert response.status_code == 200
         result = await response.get_json()
-        assert result["showGPT4VOptions"] is False
+        assert result["showMultimodalOptions"] is False
         assert result["showSemanticRankerOption"] is True
         assert result["showVectorOption"] is True
         assert result["showUserUpload"] is False
@@ -179,7 +217,7 @@ async def test_app_config_semanticranker_disabled(monkeypatch, minimal_env):
         response = await client.get("/config")
         assert response.status_code == 200
         result = await response.get_json()
-        assert result["showGPT4VOptions"] is False
+        assert result["showMultimodalOptions"] is False
         assert result["showSemanticRankerOption"] is False
         assert result["showVectorOption"] is True
         assert result["showUserUpload"] is False
@@ -189,6 +227,7 @@ async def test_app_config_semanticranker_disabled(monkeypatch, minimal_env):
 async def test_app_config_user_upload(monkeypatch, minimal_env):
     monkeypatch.setenv("AZURE_USERSTORAGE_ACCOUNT", "test-user-storage-account")
     monkeypatch.setenv("AZURE_USERSTORAGE_CONTAINER", "test-user-storage-container")
+    monkeypatch.setenv("AZURE_ENFORCE_ACCESS_CONTROL", "true")
     monkeypatch.setenv("USE_USER_UPLOAD", "true")
     quart_app = app.create_app()
     async with quart_app.test_app() as test_app:
@@ -196,7 +235,7 @@ async def test_app_config_user_upload(monkeypatch, minimal_env):
         response = await client.get("/config")
         assert response.status_code == 200
         result = await response.get_json()
-        assert result["showGPT4VOptions"] is False
+        assert result["showMultimodalOptions"] is False
         assert result["showSemanticRankerOption"] is True
         assert result["showVectorOption"] is True
         assert result["showUserUpload"] is True
@@ -207,6 +246,7 @@ async def test_app_config_user_upload_novectors(monkeypatch, minimal_env):
     """Check that this combo works correctly with prepdocs.py embedding service."""
     monkeypatch.setenv("AZURE_USERSTORAGE_ACCOUNT", "test-user-storage-account")
     monkeypatch.setenv("AZURE_USERSTORAGE_CONTAINER", "test-user-storage-container")
+    monkeypatch.setenv("AZURE_ENFORCE_ACCESS_CONTROL", "true")
     monkeypatch.setenv("USE_USER_UPLOAD", "true")
     monkeypatch.setenv("USE_VECTORS", "false")
     quart_app = app.create_app()
@@ -215,7 +255,7 @@ async def test_app_config_user_upload_novectors(monkeypatch, minimal_env):
         response = await client.get("/config")
         assert response.status_code == 200
         result = await response.get_json()
-        assert result["showGPT4VOptions"] is False
+        assert result["showMultimodalOptions"] is False
         assert result["showSemanticRankerOption"] is True
         assert result["showVectorOption"] is False
         assert result["showUserUpload"] is True
@@ -226,6 +266,7 @@ async def test_app_config_user_upload_bad_openai_config(monkeypatch, minimal_env
     """Check that this combo works correctly with prepdocs.py embedding service."""
     monkeypatch.setenv("AZURE_USERSTORAGE_ACCOUNT", "test-user-storage-account")
     monkeypatch.setenv("AZURE_USERSTORAGE_CONTAINER", "test-user-storage-container")
+    monkeypatch.setenv("AZURE_ENFORCE_ACCESS_CONTROL", "true")
     monkeypatch.setenv("USE_USER_UPLOAD", "true")
     monkeypatch.setenv("OPENAI_HOST", "openai")
     quart_app = app.create_app()
@@ -241,6 +282,7 @@ async def test_app_config_user_upload_openaicom(monkeypatch, minimal_env):
     """Check that this combo works correctly with prepdocs.py embedding service."""
     monkeypatch.setenv("AZURE_USERSTORAGE_ACCOUNT", "test-user-storage-account")
     monkeypatch.setenv("AZURE_USERSTORAGE_CONTAINER", "test-user-storage-container")
+    monkeypatch.setenv("AZURE_ENFORCE_ACCESS_CONTROL", "true")
     monkeypatch.setenv("USE_USER_UPLOAD", "true")
     monkeypatch.setenv("OPENAI_HOST", "openai")
     monkeypatch.setenv("OPENAI_API_KEY", "pretendkey")
@@ -258,7 +300,7 @@ async def test_app_config_for_client(client):
     response = await client.get("/config")
     assert response.status_code == 200
     result = await response.get_json()
-    assert result["showGPT4VOptions"] == (os.getenv("USE_GPT4V") == "true")
+    assert result["showMultimodalOptions"] == (os.getenv("USE_MULTIMODAL") == "true")
     assert result["showSemanticRankerOption"] is True
     assert result["showVectorOption"] is True
     assert result["streamingEnabled"] is True
